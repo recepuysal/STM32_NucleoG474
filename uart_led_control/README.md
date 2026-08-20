@@ -25,8 +25,27 @@ Terminalden bir satır gönderip Enter'a basınca (`\r`, `\n` veya `\r\n` ile bi
 
 Herhangi bir seri terminal programıyla (PuTTY, Tera Term, `screen`, VS Code
 Serial Monitor eklentisi vb.) kartın ST-Link COM portuna **115200 8N1**
-ayarıyla bağlanıp yukarıdaki komutları yazmanız yeterli. PowerShell'den de
-hızlıca test edilebilir:
+ayarıyla bağlanıp yukarıdaki komutları yazmanız yeterli.
+
+> ⚠️ **Satır sonu (line ending) ayarı şart!** Kart, komutun bittiğini
+> anlamak için gerçek bir `\r` veya `\n` **baytı** bekler — "LED ON" yazıp
+> Enter'a basmanız yetmez, kullandığınız programın satır sonu ayarı **"No
+> line ending"** ise kart hiçbir zaman komutu işlemez (sessizce buffer'a
+> yazmaya devam eder). `\r` karakterini elle metne yazmak da işe yaramaz
+> (`"\rLED ON"` gibi) — bu, gerçek CR baytı değil, ters slash + r
+> harfleridir.
+>
+> **VS Code "Serial Monitor" eklentisinde (ms-vscode.vscode-serial-monitor):**
+> panelin üstünde Baud Rate'i **115200** yapın, gönderme kutusunun yanındaki
+> **Line Ending** açılır menüsünü **`\r`** ya da **`\r\n`** olarak ayarlayın
+> (varsayılan "No line ending" çalışmaz), sonra kutuya sadece düz metin
+> olarak `LED ON` yazıp Enter'a basın.
+>
+> Yanıt hâlâ gelmiyorsa: baud rate'in 115200 olduğunu, kartın gerçekten bu
+> firmware ile flaşlandığını ve doğru COM portunun ("STMicroelectronics
+> STLink Virtual COM Port") seçildiğini kontrol edin.
+
+PowerShell'den de hızlıca test edilebilir:
 
 ```powershell
 $port = New-Object System.IO.Ports.SerialPort COM21,115200,None,8,One
