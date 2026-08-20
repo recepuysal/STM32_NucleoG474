@@ -1,5 +1,7 @@
 # oled_i2c_display
 
+![Çalışan ekran](oled_display_running.jpg)
+
 SSD1306 tabanlı 128x64 I2C OLED ekranda kart durumunu gösteren örnek —
 bu depodaki en "bütünsel" proje, çünkü daha önceki derslerin çoğunu
 (GPIO, buton, 1-Wire, ve şimdi I2C) tek bir uygulamada birleştiriyor.
