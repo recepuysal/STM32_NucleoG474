@@ -16,6 +16,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | Klasör | Açıklama |
 |---|---|
 | [`buton_on_off/`](buton_on_off) | Kullanıcı butonuna (B1) basılı tutulduğunda kullanıcı LED'ini (LD2) yakan, bırakınca söndüren örnek |
+| [`buton_toggle/`](buton_toggle) | Kullanıcı butonuna (B1) her basıldığında kullanıcı LED'inin (LD2) durumunu tersine çeviren (toggle) örnek |
 
 ## Ortak build/flash yöntemi
 
