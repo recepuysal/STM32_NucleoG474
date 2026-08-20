@@ -9,7 +9,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 
 - **MCU:** STM32G474RET6 (Arm Cortex-M4)
 - **Board:** NUCLEO-G474RE
-- Örnekler **CMSIS/HAL kütüphanesi kullanmadan**, doğrudan register erişimiyle (bare-metal) yazılmıştır.
+- İlk örnekler (`buton_on_off`, `buton_toggle`) CMSIS/HAL kütüphanesi kullanmadan, doğrudan register erişimiyle (bare-metal) yazılmıştır. `timer_blink`'ten itibaren gerçek STM32 CMSIS/HAL kütüphanesi kullanılmaktadır — her klasörün kendi README'sinde hangi yaklaşımın izlendiği belirtilir.
 
 ## Klasörler
 
@@ -17,6 +17,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 |---|---|
 | [`buton_on_off/`](buton_on_off) | Kullanıcı butonuna (B1) basılı tutulduğunda kullanıcı LED'ini (LD2) yakan, bırakınca söndüren örnek |
 | [`buton_toggle/`](buton_toggle) | Kullanıcı butonuna (B1) her basıldığında kullanıcı LED'inin (LD2) durumunu tersine çeviren (toggle) örnek |
+| [`timer_blink/`](timer_blink) | `HAL_Delay()` kullanmadan, TIM3 donanım zamanlayıcısının kesmesiyle (interrupt) her 500 ms'de bir LED yakıp söndüren örnek — gerçek STM32 HAL kütüphanesini kullanan ilk proje |
 
 ## Ortak build/flash yöntemi
 
