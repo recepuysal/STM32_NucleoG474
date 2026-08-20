@@ -25,6 +25,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`ntc_temperature/`](ntc_temperature) | NTC termistör (ADC, PA0 + gerilim bölücü) ile ortam sıcaklığını okuyup USART2 üzerinden seri terminale akıtan örnek; Beta denklemi `log()` yerine önceden hesaplanmış bir lookup table ile çözülür (bkz. README'deki toolchain notu) |
 | [`ds18b20_temperature/`](ds18b20_temperature) | DS18B20 dijital sıcaklık sensörünü **1-Wire** protokolüyle (PA0, elle bit-banging + DWT çevrim sayacıyla mikro-saniye zamanlama) okuyup USART2 üzerinden seri terminale akıtan örnek |
 | [`oled_i2c_display/`](oled_i2c_display) | SSD1306 I2C OLED ekranda DS18B20 sıcaklığını ve buton ile kontrol edilen LED durumunu gösteren örnek; üçüncü parti (MIT lisanslı) bir OLED sürücü kütüphanesinin projeye nasıl entegre edildiğini de anlatır |
+| [`exti_button_led/`](exti_button_led) | `buton_toggle` ile aynı davranış (basınca LED toggle), ama polling yerine gerçek bir donanım kesmesiyle (**EXTI**, `HAL_GPIO_EXTI_Callback`) |
 
 ## Ortak build/flash yöntemi
 
