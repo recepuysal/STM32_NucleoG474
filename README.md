@@ -1,5 +1,7 @@
 # STM32_NucleoG474
 
+![NUCLEO-G474RE](Nucleo-G474RE-Board.png)
+
 NUCLEO-G474RE geliştirme kartı için hazırlanan örnek projelerin tutulduğu depo.
 
 Her örnek kendi klasöründe, bağımsız ve derlenebilir bir proje olarak yer alır.

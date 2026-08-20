@@ -1,5 +1,7 @@
 # ntc_temperature
 
+![NTC probe](ntc_probe.jpg)
+
 NTC termistör ile ortam sıcaklığını okuyup **USART2 üzerinden seri
 terminale** akıtan örnek. `adc_pwm_dimmer` örneğindeki "STATUS"
 komutunun placeholder `Temperature: 24.5 C` değerinin yerini artık
