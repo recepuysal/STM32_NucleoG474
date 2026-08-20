@@ -1,5 +1,7 @@
 # adc_pwm_dimmer
 
+![Potansiyometre](potansiyometre-10k-1.jpg)
+
 Potansiyometre + ADC + PWM birleşimiyle kullanıcı LED'inin (**LD2**)
 parlaklığını analog olarak kontrol eden örnek. Potu çevirdikçe LED
 kapalıdan tam parlaklığa kadar **kademesiz** (yumuşak) geçiş yapar.
