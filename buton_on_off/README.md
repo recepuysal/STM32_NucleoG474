@@ -3,8 +3,9 @@
 NUCLEO-G474RE kartında kullanıcı butonuna (**B1**) basılı tutulduğu sürece
 kullanıcı LED'ini (**LD2**) yakan, bırakılınca söndüren basit bir örnek.
 
-CMSIS/HAL kütüphanesi kullanılmamıştır; RCC ve GPIO register'larına
-[main.c](Src/main.c) içinde doğrudan adres üzerinden erişilir.
+Gerçek STM32 HAL kütüphanesi kullanılır (`Drivers/CMSIS`,
+`Drivers/STM32G4xx_HAL_Driver`); GPIO'lara `HAL_GPIO_Init`,
+`HAL_GPIO_ReadPin` ve `HAL_GPIO_WritePin` üzerinden erişilir.
 
 ## Pin bağlantıları
 
@@ -14,14 +15,20 @@ CMSIS/HAL kütüphanesi kullanılmamıştır; RCC ve GPIO register'larına
 | B1 (kullanıcı butonu) | PC13 | Input, dahili pull-down; basılınca HIGH okunur |
 
 > Not: Bu karttaki B1 butonu basıldığında PC13'ü VDD'ye (HIGH) çeker.
-> Bu yüzden boşta kararlı LOW okumak için yazılımsal pull-down (`PUPDR`)
-> kullanılmıştır.
+> Bu yüzden boşta kararlı LOW okumak için `GPIO_InitStruct.Pull = GPIO_PULLDOWN`
+> ile dahili pull-down kullanılmıştır.
 
 ## Çalışma mantığı
 
-`main.c` sonsuz döngüde PC13'ü okur:
-- **HIGH** (buton basılı) → PA5 HIGH → LED yanar
-- **LOW** (buton bırakılmış) → PA5 LOW → LED söner
+`main.c` sonsuz döngüde `HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_13)` ile PC13'ü okur:
+- **`GPIO_PIN_SET`** (buton basılı) → `HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_SET)` → LED yanar
+- **`GPIO_PIN_RESET`** (buton bırakılmış) → LED söner
+
+`HAL_Init()` çağrısı SysTick'i 1 ms tetiklemeye ayarladığından, HAL'in iç
+zamanlama mekanizmasının çalışması için `SysTick_Handler()` içinde
+`HAL_IncTick()` çağrılması gerekir; bu proje `HAL_Delay` kullanmasa da bu
+tanım zorunludur, aksi halde SysTick kesmesi tanımsız (varsayılan sonsuz
+döngü) handler'a düşer ve kart açılışta kilitlenir.
 
 ## Derleme ve yükleme
 
@@ -34,3 +41,10 @@ cube programmer -c port=SWD -w build/Debug/STM32G474RE.elf -v -rst
 ```
 
 Kart, ST-Link programlayıcısı üzerinden USB ile bilgisayara bağlı olmalıdır.
+
+## Klasör yapısı hakkında
+
+`Drivers/` klasörü, STMicroelectronics'in resmi CMSIS ve HAL kaynak
+kodlarından (STM32CubeG4 firmware paketi) yalnızca bu örnek için gereken
+minimal alt kümeyi içerir. `Inc/stm32g4xx_hal_conf.h`, hangi HAL modüllerinin
+derlemeye dahil edildiğini kontrol eden yapılandırma dosyasıdır.

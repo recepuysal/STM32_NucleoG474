@@ -9,15 +9,15 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 
 - **MCU:** STM32G474RET6 (Arm Cortex-M4)
 - **Board:** NUCLEO-G474RE
-- İlk örnekler (`buton_on_off`, `buton_toggle`) CMSIS/HAL kütüphanesi kullanmadan, doğrudan register erişimiyle (bare-metal) yazılmıştır. `timer_blink`'ten itibaren gerçek STM32 CMSIS/HAL kütüphanesi kullanılmaktadır — her klasörün kendi README'sinde hangi yaklaşımın izlendiği belirtilir.
+- Tüm örnekler gerçek STM32 CMSIS/HAL kütüphanesini kullanır (`Drivers/CMSIS`, `Drivers/STM32G4xx_HAL_Driver`); her klasör kendi minimal HAL modül alt kümesiyle bağımsız olarak derlenir.
 
 ## Klasörler
 
 | Klasör | Açıklama |
 |---|---|
-| [`buton_on_off/`](buton_on_off) | Kullanıcı butonuna (B1) basılı tutulduğunda kullanıcı LED'ini (LD2) yakan, bırakınca söndüren örnek |
-| [`buton_toggle/`](buton_toggle) | Kullanıcı butonuna (B1) her basıldığında kullanıcı LED'inin (LD2) durumunu tersine çeviren (toggle) örnek |
-| [`timer_blink/`](timer_blink) | `HAL_Delay()` kullanmadan, TIM3 donanım zamanlayıcısının kesmesiyle (interrupt) her 500 ms'de bir LED yakıp söndüren örnek — gerçek STM32 HAL kütüphanesini kullanan ilk proje |
+| [`buton_on_off/`](buton_on_off) | Kullanıcı butonuna (B1) basılı tutulduğunda kullanıcı LED'ini (LD2) yakan, bırakınca söndüren örnek (`HAL_GPIO_ReadPin`/`WritePin`) |
+| [`buton_toggle/`](buton_toggle) | Kullanıcı butonuna (B1) her basıldığında kullanıcı LED'inin (LD2) durumunu tersine çeviren (toggle) örnek (`HAL_GPIO_TogglePin`, debounce için `HAL_Delay`) |
+| [`timer_blink/`](timer_blink) | `HAL_Delay()` kullanmadan, TIM3 donanım zamanlayıcısının kesmesiyle (interrupt) her 500 ms'de bir LED yakıp söndüren örnek (`HAL_TIM_Base_Start_IT`, `HAL_TIM_PeriodElapsedCallback`) |
 
 ## Ortak build/flash yöntemi
 

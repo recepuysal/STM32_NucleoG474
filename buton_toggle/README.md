@@ -5,8 +5,10 @@ LED'inin (**LD2**) durumunu tersine çeviren örnek: basınca yak, tekrar basın
 söndür. [buton_on_off](../buton_on_off) örneğinden farkı, LED'in butona basılı
 kalma süresine değil, sadece basma **anına** tepki vermesidir.
 
-CMSIS/HAL kütüphanesi kullanılmamıştır; RCC ve GPIO register'larına
-[main.c](Src/main.c) içinde doğrudan adres üzerinden erişilir.
+Gerçek STM32 HAL kütüphanesi kullanılır (`Drivers/CMSIS`,
+`Drivers/STM32G4xx_HAL_Driver`); GPIO'lara `HAL_GPIO_Init`,
+`HAL_GPIO_ReadPin` ve `HAL_GPIO_TogglePin` üzerinden, debounce beklemesine
+`HAL_Delay` üzerinden erişilir.
 
 ## Pin bağlantıları
 
@@ -16,7 +18,7 @@ CMSIS/HAL kütüphanesi kullanılmamıştır; RCC ve GPIO register'larına
 | B1 (kullanıcı butonu) | PC13 | Input, dahili pull-down; basılınca HIGH okunur |
 
 > Not: Bu karttaki B1 butonu basıldığında PC13'ü VDD'ye (HIGH) çeker, bu yüzden
-> boşta kararlı LOW okumak için yazılımsal pull-down (`PUPDR`) kullanılmıştır.
+> boşta kararlı LOW okumak için dahili pull-down (`GPIO_PULLDOWN`) kullanılmıştır.
 
 ## Çalışma mantığı
 
@@ -28,15 +30,18 @@ karşılaştırılır:
 1. `was_pressed` bir önceki döngüdeki buton durumunu tutar.
 2. `pressed_now && !was_pressed` şartı, "az önce basılı değildi, şimdi basılı"
    geçişini, yani butona **yeni basıldığı** anı yakalar.
-3. Bu an yakalanınca kısa bir **debounce** gecikmesi (`delay(50000)`)
+3. Bu an yakalanınca `HAL_Delay(50)` ile kısa bir **debounce** gecikmesi
    uygulanır; mekanik buton kontakları basıldığı anda birkaç kez çok hızlı
-   açılıp kapanabildiğinden (sıçrama), bu bekleme sahte çoklu geçişleri
-   eler.
+   açılıp kapanabildiğinden (sıçrama), bu bekleme sahte çoklu geçişleri eler.
 4. Bekleme sonunda buton hâlâ basılıysa gerçek bir basmadır ve
-   `GPIOA_ODR ^= (1 << PA5)` ile PA5 biti **XOR**'lanarak LED'in durumu
-   tersine çevrilir.
+   `HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5)` ile LED'in durumu tersine çevrilir.
 5. `was_pressed` güncellenir ve döngü buton bırakılana kadar (ve sonraki
    basışa kadar) tekrar tetiklenmez.
+
+`HAL_Delay()`'in çalışabilmesi (ve genel olarak HAL'in iç zamanlama
+mekanizmasının doğru işlemesi) için `SysTick_Handler()` içinde
+`HAL_IncTick()` çağrılması zorunludur; bu tanım olmadan SysTick kesmesi
+varsayılan (sonsuz döngü) handler'a düşer ve kart açılışta kilitlenir.
 
 ## Derleme ve yükleme
 
@@ -49,3 +54,10 @@ cube programmer -c port=SWD -w build/Debug/STM32G474RE.elf -v -rst
 ```
 
 Kart, ST-Link programlayıcısı üzerinden USB ile bilgisayara bağlı olmalıdır.
+
+## Klasör yapısı hakkında
+
+`Drivers/` klasörü, STMicroelectronics'in resmi CMSIS ve HAL kaynak
+kodlarından (STM32CubeG4 firmware paketi) yalnızca bu örnek için gereken
+minimal alt kümeyi içerir. `Inc/stm32g4xx_hal_conf.h`, hangi HAL modüllerinin
+derlemeye dahil edildiğini kontrol eden yapılandırma dosyasıdır.
