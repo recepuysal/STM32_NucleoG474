@@ -23,6 +23,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`uart_led_control/`](uart_led_control) | PC'den terminal üzerinden (USART2, ST-Link VCP) `LED ON` / `LED OFF` / `STATUS` komutlarıyla kartı kontrol eden örnek (`HAL_UART_Receive_IT`, RX buffer + string parsing) |
 | [`adc_pwm_dimmer/`](adc_pwm_dimmer) | Potansiyometre (ADC, PA0) ile LED parlaklığını (PWM, TIM2/PA5) analog kontrol eden örnek; anlık ADC/duty değerleri USART2 üzerinden seri terminale de akar |
 | [`ntc_temperature/`](ntc_temperature) | NTC termistör (ADC, PA0 + gerilim bölücü) ile ortam sıcaklığını okuyup USART2 üzerinden seri terminale akıtan örnek; Beta denklemi `log()` yerine önceden hesaplanmış bir lookup table ile çözülür (bkz. README'deki toolchain notu) |
+| [`ds18b20_temperature/`](ds18b20_temperature) | DS18B20 dijital sıcaklık sensörünü **1-Wire** protokolüyle (PA0, elle bit-banging + DWT çevrim sayacıyla mikro-saniye zamanlama) okuyup USART2 üzerinden seri terminale akıtan örnek |
 
 ## Ortak build/flash yöntemi
 
