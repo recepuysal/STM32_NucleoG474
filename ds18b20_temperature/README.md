@@ -1,5 +1,7 @@
 # ds18b20_temperature
 
+![DS18B20 probe](ds18b20_probe.jpg)
+
 DS18B20 dijital sıcaklık sensörünü **1-Wire** protokolüyle okuyup
 USART2 üzerinden seri terminale akıtan örnek. `ntc_temperature`'dan
 farkı: NTC analog bir dirençtir (ADC ile okunur), DS18B20 ise kendi
