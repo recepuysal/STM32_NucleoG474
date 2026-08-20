@@ -19,6 +19,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`buton_toggle/`](buton_toggle) | Kullanıcı butonuna (B1) her basıldığında kullanıcı LED'inin (LD2) durumunu tersine çeviren (toggle) örnek (`HAL_GPIO_TogglePin`, debounce için `HAL_Delay`) |
 | [`timer_blink/`](timer_blink) | `HAL_Delay()` kullanmadan, TIM3 donanım zamanlayıcısının kesmesiyle (interrupt) her 500 ms'de bir LED yakıp söndüren örnek (`HAL_TIM_Base_Start_IT`, `HAL_TIM_PeriodElapsedCallback`) |
 | [`uart_led_control/`](uart_led_control) | PC'den terminal üzerinden (USART2, ST-Link VCP) `LED ON` / `LED OFF` / `STATUS` komutlarıyla kartı kontrol eden örnek (`HAL_UART_Receive_IT`, RX buffer + string parsing) |
+| [`adc_pwm_dimmer/`](adc_pwm_dimmer) | Potansiyometre (ADC, PA0) ile LED parlaklığını (PWM, TIM2/PA5) analog kontrol eden örnek; anlık ADC/duty değerleri USART2 üzerinden seri terminale de akar |
 
 ## Ortak build/flash yöntemi
 
