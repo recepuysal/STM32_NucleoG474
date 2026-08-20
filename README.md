@@ -20,6 +20,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`timer_blink/`](timer_blink) | `HAL_Delay()` kullanmadan, TIM3 donanım zamanlayıcısının kesmesiyle (interrupt) her 500 ms'de bir LED yakıp söndüren örnek (`HAL_TIM_Base_Start_IT`, `HAL_TIM_PeriodElapsedCallback`) |
 | [`uart_led_control/`](uart_led_control) | PC'den terminal üzerinden (USART2, ST-Link VCP) `LED ON` / `LED OFF` / `STATUS` komutlarıyla kartı kontrol eden örnek (`HAL_UART_Receive_IT`, RX buffer + string parsing) |
 | [`adc_pwm_dimmer/`](adc_pwm_dimmer) | Potansiyometre (ADC, PA0) ile LED parlaklığını (PWM, TIM2/PA5) analog kontrol eden örnek; anlık ADC/duty değerleri USART2 üzerinden seri terminale de akar |
+| [`ntc_temperature/`](ntc_temperature) | NTC termistör (ADC, PA0 + gerilim bölücü) ile ortam sıcaklığını okuyup USART2 üzerinden seri terminale akıtan örnek; Beta denklemi `log()` yerine önceden hesaplanmış bir lookup table ile çözülür (bkz. README'deki toolchain notu) |
 
 ## Ortak build/flash yöntemi
 
