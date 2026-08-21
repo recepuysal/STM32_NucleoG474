@@ -27,6 +27,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`oled_i2c_display/`](oled_i2c_display) | SSD1306 I2C OLED ekranda DS18B20 sıcaklığını ve buton ile kontrol edilen LED durumunu gösteren örnek; üçüncü parti (MIT lisanslı) bir OLED sürücü kütüphanesinin projeye nasıl entegre edildiğini de anlatır |
 | [`exti_button_led/`](exti_button_led) | `buton_toggle` ile aynı davranış (basınca LED toggle), ama polling yerine gerçek bir donanım kesmesiyle (**EXTI**, `HAL_GPIO_EXTI_Callback`) |
 | [`apds9960_proximity_color/`](apds9960_proximity_color) | APDS-9960 (I2C) ile yakınlık ve RGB/clear ışık verisini okuyup USART2'ye akıtan örnek; başta I2C tarama + cihaz ID kontrolüyle bağlantı doğrulanır |
+| [`apds9960_gesture/`](apds9960_gesture) | Aynı APDS-9960 ile yukarı/aşağı/sol/sağ el hareketi (gesture) algılama; sadece hareket algılandığında UART'a tek satır yazar, dört yön de gerçek donanımla doğrulandı |
 
 ## Ortak build/flash yöntemi
 
