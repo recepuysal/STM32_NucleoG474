@@ -1,5 +1,7 @@
 # apds9960_gesture
 
+![APDS-9960](apds9960_board.jpg)
+
 [apds9960_proximity_color](../apds9960_proximity_color)'daki aynı
 sensörle, bu sefer **yukarı/aşağı/sol/sağ el hareketi algılama**
 (gesture detection). Seri terminal normalde tamamen **sessizdir** —

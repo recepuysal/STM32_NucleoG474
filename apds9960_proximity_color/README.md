@@ -1,5 +1,7 @@
 # apds9960_proximity_color
 
+![APDS-9960](apds9960_board.jpg)
+
 APDS-9960 (Adafruit breakout) ile **yakınlık (proximity)** ve **RGB/clear
 ışık** verilerini I2C üzerinden okuyup USART2'ye akıtan örnek. Bu sensörün
 sabit (değiştirilemeyen) 7-bit I2C adresi **0x39**'dur.
