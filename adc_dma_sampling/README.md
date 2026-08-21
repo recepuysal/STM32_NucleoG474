@@ -2,8 +2,8 @@
 
 ![Potansiyometre](potansiyometre-10k-1.jpg)
 
-[adc_pwm_dimmer](../adc_pwm_dimmer) ve [ntc_temperature](../ntc_temperature)
-ile aynı potansiyometre devresi, ama bu sefer ADC **DMA** ile okunuyor:
+[adc_pwm_dimmer](../adc_pwm_dimmer) ile aynı potansiyometre devresi,
+ama bu sefer ADC **DMA** ile okunuyor:
 CPU, ADC'yi hiç yoklamıyor (poll etmiyor); DMA1 her yeni 12-bit
 dönüşümü kendi başına dairesel (circular) bir RAM tamponuna yazıyor,
 `main()` döngüsü sadece DMA'nın en son hesapladığı ortalamayı okuyup
@@ -57,10 +57,10 @@ ile ilgili sıfır iş yapıyor, sadece en son hazır değeri okuyup gösteriyor
 
 ## Neden DMA? Polling'e göre fark ne
 
-Bu depodaki önceki iki ADC projesi (`adc_pwm_dimmer`, `ntc_temperature`)
-**polling** kullanıyordu: `main()` döngüsü `HAL_ADC_PollForConversion()`
-çağırıp yeni bir örnek hazır olana kadar bekliyordu — yani CPU, her
-okuma için ADC'nin bitirmesini bekleyerek zaman kaybediyordu.
+Bu depodaki önceki ADC projesi (`adc_pwm_dimmer`) **polling**
+kullanıyordu: `main()` döngüsü `HAL_ADC_PollForConversion()` çağırıp
+yeni bir örnek hazır olana kadar bekliyordu — yani CPU, her okuma için
+ADC'nin bitirmesini bekleyerek zaman kaybediyordu.
 
 Bu projede CPU, ADC ile hiç konuşmuyor:
 
