@@ -28,6 +28,7 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`exti_button_led/`](exti_button_led) | `buton_toggle` ile aynı davranış (basınca LED toggle), ama polling yerine gerçek bir donanım kesmesiyle (**EXTI**, `HAL_GPIO_EXTI_Callback`) |
 | [`apds9960_proximity_color/`](apds9960_proximity_color) | APDS-9960 (I2C) ile yakınlık ve RGB/clear ışık verisini okuyup USART2'ye akıtan örnek; başta I2C tarama + cihaz ID kontrolüyle bağlantı doğrulanır |
 | [`apds9960_gesture/`](apds9960_gesture) | Aynı APDS-9960 ile yukarı/aşağı/sol/sağ el hareketi (gesture) algılama; sadece hareket algılandığında UART'a tek satır yazar, dört yön de gerçek donanımla doğrulandı |
+| [`adc_dma_sampling/`](adc_dma_sampling) | Potansiyometre (ADC, PA0) verisini CPU hiç yoklamadan (polling yapmadan) **DMA** ile sürekli okuyan örnek; dairesel (circular) tampon + yarım/tam "ping-pong" callback deseni, DMAMUX üzerinden esnek kanal yönlendirmesi |
 
 ## Ortak build/flash yöntemi
 
