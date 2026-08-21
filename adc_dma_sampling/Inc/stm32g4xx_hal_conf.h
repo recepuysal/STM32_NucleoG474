@@ -24,6 +24,7 @@ extern "C" {
 #define HAL_PWR_MODULE_ENABLED
 #define HAL_RCC_MODULE_ENABLED
 #define HAL_ADC_MODULE_ENABLED
+#define HAL_TIM_MODULE_ENABLED
 #define HAL_UART_MODULE_ENABLED
 
 /* ########################## Register Callbacks selection ############################## */
@@ -105,6 +106,10 @@ extern "C" {
 
 #ifdef HAL_ADC_MODULE_ENABLED
 #include "stm32g4xx_hal_adc.h"
+#endif
+
+#ifdef HAL_TIM_MODULE_ENABLED
+#include "stm32g4xx_hal_tim.h"
 #endif
 
 #ifdef HAL_UART_MODULE_ENABLED

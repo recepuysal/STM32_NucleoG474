@@ -1,7 +1,8 @@
 /**
  ******************************************************************************
  * @file           : main.c
- * @brief          : ADC continuously sampled via DMA (no CPU polling)
+ * @brief          : ADC continuously sampled via DMA (no CPU polling),
+ *                    LED brightness tracks the reading live
  ******************************************************************************
  */
 
@@ -12,8 +13,17 @@
 /* NUCLEO-G474RE:
  * - Potentiometer wiper on PA0 (ADC1_IN1), same wiring as
  *   adc_pwm_dimmer: outer legs to 3V3 and GND.
+ * - User LED LD2 -> PA5, driven as PWM via TIM2_CH1 (AF1), same setup
+ *   as adc_pwm_dimmer. Brightness is updated every single pass through
+ *   main()'s loop straight from the DMA-computed average -- turning
+ *   the pot changes the LED live, with no visible delay. That
+ *   immediacy is the point: it proves the average really is being
+ *   refreshed continuously in the background by DMA, not just once
+ *   and then left stale, since main() never issues a fresh ADC
+ *   request itself.
  * - USART2 (PA2=TX, PA3=RX, ST-Link VCP, 115200 8N1) reports the
- *   latest averaged reading.
+ *   same averaged reading for anyone watching a terminal instead of
+ *   the LED.
  *
  * Every earlier ADC project (adc_pwm_dimmer, ntc_temperature) polls:
  * the main loop calls HAL_ADC_PollForConversion() and only moves on
@@ -31,9 +41,11 @@
  * (DMA_REQUEST_ADC1 here). */
 
 #define ADC_DMA_BUF_LEN 16U /* must be even: split into two halves for double-buffering */
+#define PWM_PERIOD       999U /* TIM2 @ 1 MHz / 1000 = 1 kHz PWM, no visible flicker */
 
 ADC_HandleTypeDef  hadc1;
 DMA_HandleTypeDef  hdma_adc1;
+TIM_HandleTypeDef  htim2;
 UART_HandleTypeDef huart2;
 
 static uint32_t adc_dma_buf[ADC_DMA_BUF_LEN];
@@ -43,6 +55,7 @@ static volatile uint32_t dma_events     = 0; /* counts callback firings -- shows
 static void MX_GPIO_Init(void);
 static void MX_DMA_Init(void);
 static void MX_ADC1_Init(void);
+static void MX_TIM2_PWM_Init(void);
 static void MX_USART2_UART_Init(void);
 static void uart_send(const char *s);
 static uint32_t average_buffer(const uint32_t *buf, uint32_t start, uint32_t len);
@@ -53,25 +66,34 @@ int main(void)
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_ADC1_Init();
+	MX_TIM2_PWM_Init();
 	MX_USART2_UART_Init();
 
 	uart_send("ADC+DMA continuous sampling starting...\r\n");
 
 	HAL_ADC_Start_DMA(&hadc1, adc_dma_buf, ADC_DMA_BUF_LEN);
+	HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
 
 	uint32_t last_print = 0;
 
 	/* main() genuinely never reads the ADC or the DMA buffer itself --
-	 * every number printed here was already computed by a DMA
-	 * completion callback before this loop ever looks at it. */
+	 * every number printed here (and every brightness level shown on
+	 * the LED) was already computed by a DMA completion callback
+	 * before this loop ever looks at it. The LED line below runs every
+	 * single pass through the loop, not gated by any timer, so it
+	 * tracks the pot with no perceptible lag. */
 	for (;;)
 	{
+		uint32_t duty = (latest_average * (PWM_PERIOD + 1U)) / 4096U;
+		__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, duty);
+
 		if ((HAL_GetTick() - last_print) >= 300U)
 		{
 			char line[64];
+			unsigned percent = (unsigned)((duty * 100U) / (PWM_PERIOD + 1U));
 
-			snprintf(line, sizeof(line), "ADC (DMA avg): %4lu   DMA callbacks so far: %lu\r\n",
-			         (unsigned long)latest_average, (unsigned long)dma_events);
+			snprintf(line, sizeof(line), "ADC (DMA avg): %4lu  LED: %3u%%   DMA callbacks so far: %lu\r\n",
+			         (unsigned long)latest_average, percent, (unsigned long)dma_events);
 			uart_send(line);
 
 			last_print = HAL_GetTick();
@@ -130,6 +152,14 @@ static void MX_GPIO_Init(void)
 	GPIO_InitStruct.Pull      = GPIO_NOPULL;
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART2;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	/* PA5: LD2 as TIM2_CH1 PWM output */
+	GPIO_InitStruct.Pin       = GPIO_PIN_5;
+	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull      = GPIO_NOPULL;
+	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_LOW;
+	GPIO_InitStruct.Alternate = GPIO_AF1_TIM2;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
@@ -202,6 +232,27 @@ static void MX_ADC1_Init(void)
 	sConfig.OffsetNumber = ADC_OFFSET_NONE;
 	sConfig.Offset       = 0;
 	HAL_ADC_ConfigChannel(&hadc1, &sConfig);
+}
+
+static void MX_TIM2_PWM_Init(void)
+{
+	TIM_OC_InitTypeDef sConfigOC = { 0 };
+
+	__HAL_RCC_TIM2_CLK_ENABLE();
+
+	htim2.Instance               = TIM2;
+	htim2.Init.Prescaler         = 15; /* 16 MHz / 16 = 1 MHz counter clock */
+	htim2.Init.CounterMode       = TIM_COUNTERMODE_UP;
+	htim2.Init.Period            = PWM_PERIOD; /* 1 MHz / 1000 = 1 kHz PWM */
+	htim2.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1;
+	htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	HAL_TIM_PWM_Init(&htim2);
+
+	sConfigOC.OCMode     = TIM_OCMODE_PWM1;
+	sConfigOC.Pulse      = 0; /* start at 0% duty (LED off) */
+	sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+	sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+	HAL_TIM_PWM_ConfigChannel(&htim2, &sConfigOC, TIM_CHANNEL_1);
 }
 
 static void MX_USART2_UART_Init(void)

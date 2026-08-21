@@ -7,18 +7,19 @@ ile aynı potansiyometre devresi, ama bu sefer ADC **DMA** ile okunuyor:
 CPU, ADC'yi hiç yoklamıyor (poll etmiyor); DMA1 her yeni 12-bit
 dönüşümü kendi başına dairesel (circular) bir RAM tamponuna yazıyor,
 `main()` döngüsü sadece DMA'nın en son hesapladığı ortalamayı okuyup
-seri porta basıyor.
+hem seri porta basıyor hem de dahili LED'in (LD2) parlaklığını
+canlı olarak buna göre ayarlıyor.
 
 Gerçek donanımda doğrulandı — potansiyometre çevrildikçe değer akıcı
-şekilde 0-4095 arasında değişiyor, DMA geri çağırma (callback) sayacı
-kesintisiz artıyor:
+şekilde 0-4095 arasında değişiyor, LED parlaklığı hiç gecikmesiz takip
+ediyor, DMA geri çağırma (callback) sayacı kesintisiz artıyor:
 
 ```
-ADC (DMA avg): 2537   DMA callbacks so far: 27798
-ADC (DMA avg): 2215   DMA callbacks so far: 42998
-ADC (DMA avg):    1   DMA callbacks so far: 53131
-ADC (DMA avg): 4095   DMA callbacks so far: 101265
-ADC (DMA avg):  651   DMA callbacks so far: 136731
+ADC (DMA avg): 2537  LED:  62%   DMA callbacks so far: 27798
+ADC (DMA avg): 2215  LED:  54%   DMA callbacks so far: 42998
+ADC (DMA avg):    1  LED:   0%   DMA callbacks so far: 53131
+ADC (DMA avg): 4095  LED: 100%   DMA callbacks so far: 101265
+ADC (DMA avg):  651  LED:  15%   DMA callbacks so far: 136731
 ```
 
 ## Donanım bağlantısı
@@ -28,7 +29,31 @@ ADC (DMA avg):  651   DMA callbacks so far: 136731
 | Potansiyometre orta uç (wiper) | **PA0** | ADC1_IN1 |
 | Potansiyometre bir dış ucu | 3V3 | |
 | Potansiyometre diğer dış ucu | GND | |
+| LD2 (dahili LED) | PA5 | TIM2_CH1 PWM |
 | USART2 TX/RX | PA2 / PA3 | ST-Link VCP, 115200 8N1 |
+
+## LED neden eklendi: DMA'nın arka planda çalıştığını gözle görmek
+
+Sadece seri terminale bakarak "DMA gerçekten sürekli çalışıyor mu yoksa
+bir kere okuyup mu duruyor" ayrımını yapmak kolay değil. Bu yüzden LD2,
+`main()`'in döngüsünün **her turunda** (herhangi bir zamanlayıcıya
+bağlı olmadan) `latest_average`'den yeniden hesaplanan bir PWM
+parlaklığıyla sürülüyor:
+
+```c
+for (;;)
+{
+    uint32_t duty = (latest_average * (PWM_PERIOD + 1U)) / 4096U;
+    __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, duty);
+    ...
+}
+```
+
+Potu çevirdiğin an LED'in **hiç gecikmesiz** tepki vermesi, `main()`'in
+kendisinin ADC'ye hiç dokunmadığının, `latest_average`'in DMA
+callback'leri tarafından saniyede binlerce kez arka planda tazelendiğinin
+görsel kanıtıdır — `main()`'in döngüsü kelimenin tam anlamıyla ADC/DMA
+ile ilgili sıfır iş yapıyor, sadece en son hazır değeri okuyup gösteriyor.
 
 ## Neden DMA? Polling'e göre fark ne
 
@@ -122,6 +147,6 @@ Kart, ST-Link programlayıcısı üzerinden USB ile bilgisayara bağlı olmalıd
 
 `Drivers/` klasörü, STMicroelectronics'in resmi CMSIS ve HAL kaynak
 kodlarından yalnızca bu örnek için gereken minimal alt kümeyi içerir:
-`RCC`, `GPIO`, `DMA`, `EXTI`, `FLASH`, `PWR`, `CORTEX`, `ADC` ve
+`RCC`, `GPIO`, `DMA`, `EXTI`, `FLASH`, `PWR`, `CORTEX`, `ADC`, `TIM` ve
 `UART` modülleri. `Inc/stm32g4xx_hal_conf.h`, hangi HAL modüllerinin
 derlemeye dahil edildiğini kontrol eden yapılandırma dosyasıdır.
