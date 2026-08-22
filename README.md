@@ -29,6 +29,13 @@ Yeni bir örnek eklendikçe bu listeye yeni bir satır eklenir.
 | [`apds9960_proximity_color/`](apds9960_proximity_color) | APDS-9960 (I2C) ile yakınlık ve RGB/clear ışık verisini okuyup USART2'ye akıtan örnek; başta I2C tarama + cihaz ID kontrolüyle bağlantı doğrulanır |
 | [`apds9960_gesture/`](apds9960_gesture) | Aynı APDS-9960 ile yukarı/aşağı/sol/sağ el hareketi (gesture) algılama; sadece hareket algılandığında UART'a tek satır yazar, dört yön de gerçek donanımla doğrulandı |
 | [`adc_dma_sampling/`](adc_dma_sampling) | Potansiyometre (ADC, PA0) verisini CPU hiç yoklamadan (polling yapmadan) **DMA** ile sürekli okuyan örnek; dairesel (circular) tampon + yarım/tam "ping-pong" callback deseni, DMAMUX üzerinden esnek kanal yönlendirmesi |
+| [`adc_internal_temp/`](adc_internal_temp) † | Çipin **dahili sıcaklık sensörünü** ADC ile okuyup her saniye USART2 üzerinden seri terminale akıtan örnek; buton (B1) EXTI kesmesiyle LED'i (LD2) aç/kapat yapıp durumu da seri porta yazar (bkz. README'deki ADC saat hızı notu) |
+
+† `adc_internal_temp`, STM32Cube for VS Code'un daha yeni proje
+şablonuyla (`Core/Inc`/`Core/Src` + NUCLEO BSP kütüphanesi) oluşturuldu,
+diğer klasörler gibi `Inc`/`Src` + ham HAL değil — ayrıntı için o
+klasörün README'sindeki "Klasör yapısı hakkında" bölümüne bakın.
+Build/flash adımları aynı şekilde çalışır.
 
 ## Ortak build/flash yöntemi
 
